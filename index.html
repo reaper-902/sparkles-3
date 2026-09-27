@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Loading...</title>
+
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #000;
+        }
+
+        canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+<canvas id="stars"></canvas>
+
+<script>
+    const canvas = document.getElementById("stars");
+    const ctx = canvas.getContext("2d");
+
+    let stars = [];
+    const STAR_COUNT = 700;
+
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        stars = [];
+
+        for (let i = 0; i < STAR_COUNT; i++) {
+            createStar(true);
+        }
+    }
+
+    function createStar(randomDepth = false) {
+        stars.push({
+            x: (Math.random() - 0.5) * canvas.width,
+            y: (Math.random() - 0.5) * canvas.height,
+
+            z: randomDepth
+                ? Math.random() * canvas.width
+                : canvas.width,
+
+            speed: Math.random() * 3 + 1,
+
+            size: Math.random() * 2 + 0.5,
+
+            // About 70% white, 30% magenta
+            magenta: Math.random() < 0.40,
+
+            alpha: Math.random() * 0.6 + 0.4,
+
+            twinkle: Math.random() * 0.02 + 0.005,
+
+            direction: Math.random() < 0.5 ? 1 : -1
+        });
+    }
+
+    function drawStar(star) {
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+
+        // Perspective
+        const scale = canvas.width / star.z;
+
+        const x = centerX + star.x * scale;
+        const y = centerY + star.y * scale;
+
+        const size = Math.max(1, star.size * scale);
+
+        // Don't draw stars outside the screen
+        if (
+            x < -20 ||
+            x > canvas.width + 20 ||
+            y < -20 ||
+            y > canvas.height + 20
+        ) {
+            return;
+        }
+
+        if (star.magenta) {
+            ctx.fillStyle = `rgba(255, 40, 150, ${star.alpha})`;
+        } else {
+            ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha})`;
+        }
+
+        ctx.fillRect(
+            Math.floor(x),
+            Math.floor(y),
+            Math.ceil(size),
+            Math.ceil(size)
+        );
+
+        // Larger stars get a subtle glow
+        if (size > 3) {
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = star.magenta
+                ? "rgba(255, 0, 140, 0.8)"
+                : "rgba(255, 255, 255, 0.6)";
+
+            ctx.fillRect(
+                Math.floor(x),
+                Math.floor(y),
+                Math.ceil(size),
+                Math.ceil(size)
+            );
+
+            ctx.shadowBlur = 0;
+        }
+    }
+
+    function animate() {
+        // Black background
+        ctx.fillStyle = "#000";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        for (let i = stars.length - 1; i >= 0; i--) {
+            const star = stars[i];
+
+            // Move toward the camera
+            star.z -= star.speed;
+
+            // Twinkle
+            star.alpha += star.twinkle * star.direction;
+
+            if (star.alpha >= 1) {
+                star.alpha = 1;
+                star.direction = -1;
+            }
+
+            if (star.alpha <= 0.25) {
+                star.alpha = 0.25;
+                star.direction = 1;
+            }
+
+            drawStar(star);
+
+            // Star reached the camera
+            if (star.z < 1) {
+                stars.splice(i, 1);
+                createStar(false);
+            }
+        }
+
+        requestAnimationFrame(animate);
+    }
+
+    window.addEventListener("resize", resize);
+
+    resize();
+    animate();
+</script>
+
+</body>
+</html>
