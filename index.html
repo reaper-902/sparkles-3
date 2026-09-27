@@ -24,12 +24,22 @@
 </head>
 
 <body>
-<audio id="bgMusic" autoplay loop>
+
+<audio id="bgMusic" loop>
     <source src="hysteria%20%281%29.mp3" type="audio/mpeg">
 </audio>
+
 <canvas id="stars"></canvas>
 
 <script>
+    const music = document.getElementById("bgMusic");
+
+    music.volume = 0.5;
+
+    music.play().catch(() => {
+        console.log("Music autoplay was blocked.");
+    });
+
     const canvas = document.getElementById("stars");
     const ctx = canvas.getContext("2d");
 
@@ -60,7 +70,6 @@
 
             size: Math.random() * 2 + 0.5,
 
-            // About 70% white, 30% magenta
             magenta: Math.random() < 0.40,
 
             alpha: Math.random() * 0.6 + 0.4,
@@ -75,7 +84,6 @@
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
 
-        // Perspective
         const scale = canvas.width / star.z;
 
         const x = centerX + star.x * scale;
@@ -83,7 +91,6 @@
 
         const size = Math.max(1, star.size * scale);
 
-        // Don't draw stars outside the screen
         if (
             x < -20 ||
             x > canvas.width + 20 ||
@@ -106,7 +113,6 @@
             Math.ceil(size)
         );
 
-        // Larger stars get a subtle glow
         if (size > 3) {
             ctx.shadowBlur = 10;
             ctx.shadowColor = star.magenta
@@ -125,17 +131,14 @@
     }
 
     function animate() {
-        // Black background
         ctx.fillStyle = "#000";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         for (let i = stars.length - 1; i >= 0; i--) {
             const star = stars[i];
 
-            // Move toward the camera
             star.z -= star.speed;
 
-            // Twinkle
             star.alpha += star.twinkle * star.direction;
 
             if (star.alpha >= 1) {
@@ -150,7 +153,6 @@
 
             drawStar(star);
 
-            // Star reached the camera
             if (star.z < 1) {
                 stars.splice(i, 1);
                 createStar(false);
