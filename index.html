@@ -22,20 +22,20 @@
             height: 100%;
         }
 
-        .pixel-credit {
+        .logo {
             position: absolute;
             top: 12px;
             left: 14px;
-            color: rgba(255, 255, 255, 0.45);
-            font-family: "Courier New", monospace;
-            font-size: 12px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            text-shadow:
-                1px 0 rgba(255, 40, 150, 0.25),
-                0 1px rgba(255, 40, 150, 0.15);
+            width: 64px;
+            height: 64px;
             z-index: 10;
             pointer-events: none;
+            animation: logoGlow 2.6s ease-in-out infinite;
+        }
+
+        @keyframes logoGlow {
+            0%, 100% { filter: drop-shadow(0 0 3px rgba(255, 40, 200, 0.45)); }
+            50%      { filter: drop-shadow(0 0 12px rgba(255, 40, 200, 0.95)); }
         }
     </style>
 </head>
@@ -46,9 +46,26 @@
     <source src="loadingscreenserver.mp3" type="audio/mpeg">
 </audio>
 
-<div class="pixel-credit">
-    
-</div>
+<svg class="logo" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+    <!-- knife -->
+    <path d="M32 3 C36 13 38 24 37 36 L27 36 C26 24 28 13 32 3 Z"
+          fill="#15151a" stroke="rgba(255,255,255,0.85)" stroke-width="1.2"/>
+    <rect x="22" y="36" width="20" height="4" rx="2"
+          fill="#15151a" stroke="rgba(255,255,255,0.85)" stroke-width="1.2"/>
+    <rect x="28" y="40" width="8" height="17" rx="3"
+          fill="#15151a" stroke="rgba(255,255,255,0.85)" stroke-width="1.2"/>
+
+    <!-- snake body winding around the knife -->
+    <path d="M17 60 C17 49 47 51 47 42 C47 33 17 35 17 27 C17 19 47 21 47 14 C47 11 45 10 43 10"
+          fill="none" stroke="#ff28c8" stroke-width="4.5"
+          stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- snake head -->
+    <ellipse cx="40" cy="9" rx="5" ry="3.8" fill="#ff28c8"/>
+    <circle cx="39" cy="8" r="1" fill="#000"/>
+    <path d="M35 9 L31 9 M31 9 L29 7.5 M31 9 L29 10.5"
+          stroke="#ff7ad9" stroke-width="1" stroke-linecap="round" fill="none"/>
+</svg>
 
 <canvas id="scene"></canvas>
 
